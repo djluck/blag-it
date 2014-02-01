@@ -1,8 +1,10 @@
 Posts = new Meteor.Collection("posts");
 
 Meteor.publish('all-posts', function () {
-  console.log("Found " + Posts.find().count() + " posts in all-posts");
-  return Posts.find();
+  var opts = {
+    sort : [["createdAt", "desc"]]
+  };
+  return Posts.find({}, opts);
 });
 
 Meteor.publish("userData", function(){
@@ -14,20 +16,28 @@ Meteor.publish("userData", function(){
 });
 
 Posts.allow({
-  insert: function(userId, post){
-    return isItMe(userId);
-  },
-  remove : function(userId, post){
-    return isItMe(userId);
-  }
+  insert : function(uId, post) { return canPost(uId, post) },
+  remove : function(uId, post) { return canPost(uId, post) },
+  update : function(uId, post) { return canPost(uId, post) } 
 });
 
-var isItMe = function(userId){
-  if (userId === null) return false;
+var canPost = function(userId, post){
+  console.log("HIHI" + userId);
+  if (userId < 1){
+    return false;
+  }
+  var user = Meteor.users.findOne(userId);
+  console.log(user);
+  return user !== null && user.isAdmin;
+}
 
-  var user = Meteor.users.findOne({_id : userId})
+var isItMe = function(user){
   var email = user.services.google.email;
   console.log("Email is " + email);
   return email === "djluck20@googlemail.com";
 }
 
+Accounts.onCreateUser(function(options, user){
+  user.isAdmin = itItMe(user);
+  return user;
+});

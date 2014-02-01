@@ -1,6 +1,8 @@
 <template name="posts">
   {{#each posts}}
-    {{>post}}
+    {{#if showPost}}
+      {{>post}}
+    {{/if}}
   {{/each}}
 </template>
 
@@ -8,42 +10,38 @@
   <div class="row">
    <div class="panel panel-default">
       <div class="panel-heading">
-        <b class="panel-title">{{title}}</b>
-        
+        {{#if isBeingEdited}}
+          <input type="text" id="title" value="{{title}}" placeholder="Title"/>
+        {{else}}
+          <b style="font-size:22px" class="panel-title">{{title}}</b>
+        {{/if}}
         {{#if isAdmin}}
         <div class="btn-group pull-right">
-          <a href="#" class="btn btn-default btn-sm">
+          <button type="button" class="btn btn-default btn-sm btn-toggle-live {{btnToggleLiveClass}}">
             <span class="glyphicon glyphicon-eye-open"></span>
-          </a>
-          <a href="#" class="btn btn-default btn-sm">
+          </button>
+          <button type="button" class="btn btn-default btn-sm btn-edit-post">
             <span class="glyphicon glyphicon-pencil"></span>
-          </a>
-          <a href="#" class="btn btn-default btn-sm btn-delete-post" data-id="{{_id}}">
+          </button>
+          <button type="button" class="btn btn-default btn-sm btn-delete-post">
             <span class="glyphicon glyphicon-remove"></span>
-          </a>
+          </button>
         </div>
         <div class="clearfix"></div>
         {{/if}}
       </div>
-      <div clas="panel-body">
-      {{#markdown}}{{content}}{{/markdown}}
+      <div class="panel-body">
+        {{#if isBeingEdited}}
+          <textarea id="content" cols="60" rows="20" placeholder="Put post content here (supports markdown)">{{content}}</textarea>
+        {{else}}
+          {{#markdown}}{{content}}{{/markdown}}
+        {{/if}}
       </div>
     </div>
   </div>
 </template>
 
-
-<template name="post-create">
-  <form>
-    <div class="form-group">
-      <label for="title">Title:</label>
-      <input type="text" id="title"/>
-    </div>
-    <div class="form-group">
-      <label for="content">Content:</label>
-      <textarea id="content" cols="40" rows="5"></textarea>
-    </div>
-    <button type="submit" class="btn btn-default">Create Post</button>
-  </form>
+<template name="autoSave">
+  
 </template>
 
