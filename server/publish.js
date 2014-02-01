@@ -38,6 +38,6 @@ var isItMe = function(user){
 }
 
 Accounts.onCreateUser(function(options, user){
-  user.isAdmin = itItMe(user);
+  user.isAdmin = isItMe(user);
   return user;
 });
