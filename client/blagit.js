@@ -7,7 +7,7 @@ Meteor.subscribe("all-posts", function(){
 Meteor.subscribe("userData");
 
 Template.posts.posts = function(){
-  return Posts.find().fetch();
+  return Posts.find({}, { sort : [["createdAt", "desc"]] }).fetch();
 };
 
 Template.posts.showPost = function(){
@@ -20,7 +20,9 @@ Template.post.btnToggleLiveClass = function(){
 };
 
 Template.post.isBeingEdited = function(){
-  return this.edited;
+  var currentlyEditingId = Session.get("editing");
+   
+  return currentlyEditingId !== null && currentlyEditingId === this._id;;
 }
 
 Template.posts.events({
@@ -37,8 +39,13 @@ Template.posts.events({
     });
   },
   "click .btn-edit-post": function(event){
-    this.edited = true;
     setPostAsEditing(this._id);
+  }
+});
+
+Template.post.events({
+  "keydown .post-content" : function(event){
+    startAutoSave(this);
   }
 });
 
@@ -55,11 +62,11 @@ var setPostAsEditing = function(id){
     Session.setDefault("editing", null);
     var currentlyEditing = Session.get("editing");
     
-    if (currentlyEditing !== null){
-      Session.set("editing", null);
+    if (currentlyEditing === null){
+      Session.set("editing", id);
     }
     else{
-      Session.set("editing", id);
+      Session.set("editing", null);
     }
 };
 
@@ -78,6 +85,28 @@ Template.createPost.events({
   }
 });
 
-var startAutoSave = function(){
+var autoSaveTimer = null;
+var startAutoSave = function(post){
+  if (autoSaveTimer !== null){
+    return;
+  }
+  autoSaveTimer = Meteor.setTimeout(function(){
+    Meteor.clearTimeout(autoSaveTimer);
+    autoSaveTimer = null;
+    Session.set("autoSave.isSaving", true);
+    Posts.update(post._id, {
+      $set : { title : $("#title").val() , content : $("#content").val(), lastSavedAt : new Date() }
+    }, function(error){
+      Session.set("autoSave.isSaving", false);
+    });
+  }, 3000);
+};
 
+
+Template.autoSave.lastSavedAt = function(){
+  return Posts.findOne(Session.get("editing")).lastSavedAt; 
+};
+
+Template.autoSave.isSaving = function(){
+  return session.get("autoSave.isSaving");
 };

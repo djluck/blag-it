@@ -11,7 +11,8 @@
    <div class="panel panel-default">
       <div class="panel-heading">
         {{#if isBeingEdited}}
-          <input type="text" id="title" value="{{title}}" placeholder="Title"/>
+          <input type="text" id="title" class="post-content" value="{{title}}" placeholder="Title"/>
+          {{>autoSave}}
         {{else}}
           <b style="font-size:22px" class="panel-title">{{title}}</b>
         {{/if}}
@@ -32,7 +33,7 @@
       </div>
       <div class="panel-body">
         {{#if isBeingEdited}}
-          <textarea id="content" cols="60" rows="20" placeholder="Put post content here (supports markdown)">{{content}}</textarea>
+          <textarea id="content" class="post-content" cols="60" rows="20" placeholder="Put post content here (supports markdown)">{{content}}</textarea>
         {{else}}
           {{#markdown}}{{content}}{{/markdown}}
         {{/if}}
@@ -42,6 +43,10 @@
 </template>
 
 <template name="autoSave">
-  
+  {{#if saving}}
+    Saving..
+  {{else}}
+    Last saved @ {{lastSavedAt}}
+  {{/if}}
 </template>
 
