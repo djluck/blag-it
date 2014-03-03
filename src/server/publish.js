@@ -27,7 +27,6 @@ var canPost = function(userId, post){
     return false;
   }
   var user = Meteor.users.findOne(userId);
-  console.log(user);
   return user !== null && user.isAdmin;
 }
 

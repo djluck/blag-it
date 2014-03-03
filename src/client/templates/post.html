@@ -1,11 +1,3 @@
-<template name="posts">
-  {{#each posts}}
-    {{#if showPost}}
-      {{>post}}
-    {{/if}}
-  {{/each}}
-</template>
-
 <template name="post">
   <div class="row">
    <div class="panel panel-default">
@@ -33,20 +25,15 @@
       </div>
       <div class="panel-body">
         {{#if isBeingEdited}}
-          <textarea id="content" class="post-content" cols="60" rows="20" placeholder="Put post content here (supports markdown)">{{content}}</textarea>
+          <div class="wmd-panel">
+              <div id="wmd-button-bar"></div>
+              <textarea id="wmd-input" class="wmd-input post-content" placeholder="Put post content here (supports markdown)">{{content}}</textarea>
+          </div>
+          <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
         {{else}}
-          {{#markdown}}{{content}}{{/markdown}}
+          {{#pagedown}}{{{content}}}{{/pagedown}}
         {{/if}}
       </div>
     </div>
   </div>
 </template>
-
-<template name="autoSave">
-  {{#if saving}}
-    Saving..
-  {{else}}
-    Last saved @ {{lastSavedAt}}
-  {{/if}}
-</template>
-
